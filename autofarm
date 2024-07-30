@@ -1,0 +1,411 @@
+-- AUTOFARM BY https://discord.gg/atbk7jvtdm
+
+local player = game:GetService("Players").LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- Crée un ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ActionRecorderGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Crée le cadre principal
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 500, 0, 600) -- Agrandi à 500x600 pixels
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -300) -- Centré avec la nouvelle taille
+mainFrame.BackgroundColor3 = Color3.fromRGB(54, 57, 63)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Gestion du glisser-déposer
+local dragging = false
+local dragInput, mousePos, framePos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = mainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - mousePos
+        mainFrame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Cadre des onglets
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(0, 150, 1, 0) -- Agrandi à 150 pixels de large
+tabFrame.Position = UDim2.new(0, 0, 0, 0)
+tabFrame.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+tabFrame.BorderSizePixel = 0
+tabFrame.Parent = mainFrame
+
+-- Cadre de contenu
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -150, 1, 0) -- Ajusté pour occuper le reste de l'espace
+contentFrame.Position = UDim2.new(0, 150, 0, 0)
+contentFrame.BackgroundColor3 = Color3.fromRGB(54, 57, 63)
+contentFrame.BorderSizePixel = 0
+contentFrame.Parent = mainFrame
+
+-- Fonction pour créer des boutons d'onglets
+local function createTabButton(name, position)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 0, 50)
+    button.Position = UDim2.new(0, 0, 0, position)
+    button.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 24
+    button.Text = name
+    button.Parent = tabFrame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = button
+    
+    return button
+end
+
+-- Création des boutons d'onglets
+local playerTabButton = createTabButton("Player", 0)
+local recordTabButton = createTabButton("Record", 50)
+
+-- Création des cadres des onglets
+local playerTab = Instance.new("Frame")
+playerTab.Size = UDim2.new(1, 0, 1, 0)
+playerTab.Position = UDim2.new(0, 0, 0, 0)
+playerTab.BackgroundTransparency = 1
+playerTab.Visible = true
+playerTab.Parent = contentFrame
+
+local recordTab = Instance.new("Frame")
+recordTab.Size = UDim2.new(1, 0, 1, 0)
+recordTab.Position = UDim2.new(0, 0, 0, 0)
+recordTab.BackgroundTransparency = 1
+recordTab.Visible = false
+recordTab.Parent = contentFrame
+
+-- Fonction pour changer d'onglet
+local function switchTab(tab)
+    playerTab.Visible = false
+    recordTab.Visible = false
+    tab.Visible = true
+end
+
+playerTabButton.MouseButton1Click:Connect(function() switchTab(playerTab) end)
+recordTabButton.MouseButton1Click:Connect(function() switchTab(recordTab) end)
+-- AUTOFARM BY https://discord.gg/atbk7jvtdm
+-- Titre pour le cadre des joueurs -- AUTOFARM BY https://discord.gg/atbk7jvtdm
+local playerTitle = Instance.new("TextLabel")
+playerTitle.Size = UDim2.new(1, 0, 0, 30)
+playerTitle.Position = UDim2.new(0, 0, 0, 0)
+playerTitle.BackgroundTransparency = 1
+playerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerTitle.Font = Enum.Font.SourceSansBold
+playerTitle.TextSize = 20
+playerTitle.Text = "Player Controls"
+playerTitle.TextXAlignment = Enum.TextXAlignment.Center
+playerTitle.Parent = playerTab
+
+-- Fonction pour exécuter un script externe
+local function executeExternalScript()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end
+
+-- Boutons pour contrôler l'enregistrement
+local buttonFly = Instance.new("TextButton")
+buttonFly.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonFly.Position = UDim2.new(0.5, -125, 0.1, -25) -- Réajusté pour la nouvelle taille
+buttonFly.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonFly.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonFly.Font = Enum.Font.SourceSans
+buttonFly.TextSize = 24
+buttonFly.Text = "Execute Script"
+buttonFly.Parent = playerTab
+
+local buttonFlyCorner = Instance.new("UICorner")
+buttonFlyCorner.CornerRadius = UDim.new(0, 12)
+buttonFlyCorner.Parent = buttonFly
+
+buttonFly.MouseButton1Click:Connect(executeExternalScript)
+
+-- Ajout du bouton ANTI AFK
+local buttonAntiAFK = Instance.new("TextButton")
+buttonAntiAFK.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonAntiAFK.Position = UDim2.new(0.5, -125, 0.2, -25) -- Réajusté pour la nouvelle taille
+buttonAntiAFK.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonAntiAFK.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonAntiAFK.Font = Enum.Font.SourceSans
+buttonAntiAFK.TextSize = 24
+buttonAntiAFK.Text = "ANTI AFK"
+buttonAntiAFK.Parent = playerTab
+
+local buttonAntiAFKCorner = Instance.new("UICorner")
+buttonAntiAFKCorner.CornerRadius = UDim.new(0, 12)
+buttonAntiAFKCorner.Parent = buttonAntiAFK
+
+-- Fonction pour activer l'ANTI AFK
+local function activateAntiAFK()
+    wait(0.5)
+    local ba = Instance.new("ScreenGui")
+    local ca = Instance.new("TextLabel")
+    local da = Instance.new("Frame")
+    local _b = Instance.new("TextLabel")
+    local ab = Instance.new("TextLabel")
+    ba.Parent = game.CoreGui
+    ba.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ca.Parent = ba
+    ca.Active = true
+    ca.BackgroundColor3 = Color3.new(0.176471, 0.176471, 0.176471)
+    ca.Draggable = true
+    ca.Position = UDim2.new(0.698610067, 0, 0.098096624, 0)
+    ca.Size = UDim2.new(0, 370, 0, 52)
+    ca.Font = Enum.Font.SourceSansSemibold
+    ca.Text = "Anti AFK"
+    ca.TextColor3 = Color3.new(0, 1, 1)
+    ca.TextSize = 22
+    da.Parent = ca
+    da.BackgroundColor3 = Color3.new(0.196078, 0.196078, 0.196078)
+    da.Position = UDim2.new(0, 0, 1.0192306, 0)
+    da.Size = UDim2.new(0, 370, 0, 107)
+    _b.Parent = da
+    _b.BackgroundColor3 = Color3.new(0.176471, 0.176471, 0.176471)
+    _b.Position = UDim2.new(0, 0, 0.800455689, 0)
+    _b.Size = UDim2.new(0, 370, 0, 21)
+    _b.Font = Enum.Font.Arial
+    _b.Text = "Made by Headshot#5868"
+    _b.TextColor3 = Color3.new(0, 1, 1)
+    _b.TextSize = 20
+    ab.Parent = da
+    ab.BackgroundColor3 = Color3.new(0.176471, 0.176471, 0.176471)
+    ab.Position = UDim2.new(0, 0, 0.158377, 0)
+    ab.Size = UDim2.new(0, 370, 0, 44)
+    ab.Font = Enum.Font.ArialBold
+    ab.Text = "Status: Active"
+    ab.TextColor3 = Color3.new(0, 1, 1)
+    ab.TextSize = 20
+
+    local bb = game:service'VirtualUser'
+    game:service'Players'.LocalPlayer.Idled:connect(function()
+        bb:CaptureController()
+        bb:ClickButton2(Vector2.new())
+        ab.Text = "Roblox kicked you but we didn't let them!"
+        wait(2)
+        ab.Text = "Status : Active"
+    end)
+end
+
+buttonAntiAFK.MouseButton1Click:Connect(activateAntiAFK)
+
+-- Crée les boutons pour enregistrer et lire
+local buttonStartRecording = Instance.new("TextButton")
+buttonStartRecording.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonStartRecording.Position = UDim2.new(0.5, -125, 0.1, -25) -- Réajusté pour la nouvelle taille
+buttonStartRecording.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonStartRecording.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonStartRecording.Font = Enum.Font.SourceSans
+buttonStartRecording.TextSize = 24
+buttonStartRecording.Text = "Start Recording"
+buttonStartRecording.Parent = recordTab
+
+local buttonStartRecordingCorner = Instance.new("UICorner")
+buttonStartRecordingCorner.CornerRadius = UDim.new(0, 12)
+buttonStartRecordingCorner.Parent = buttonStartRecording
+
+local buttonStopRecording = Instance.new("TextButton")
+buttonStopRecording.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonStopRecording.Position = UDim2.new(0.5, -125, 0.2, -25) -- Réajusté pour la nouvelle taille
+buttonStopRecording.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonStopRecording.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonStopRecording.Font = Enum.Font.SourceSans
+buttonStopRecording.TextSize = 24
+buttonStopRecording.Text = "Stop Recording"
+buttonStopRecording.Parent = recordTab
+
+local buttonStopRecordingCorner = Instance.new("UICorner")
+buttonStopRecordingCorner.CornerRadius = UDim.new(0, 12)
+buttonStopRecordingCorner.Parent = buttonStopRecording
+
+local buttonStartReplay = Instance.new("TextButton")
+buttonStartReplay.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonStartReplay.Position = UDim2.new(0.5, -125, 0.45, -25) -- Réajusté pour la nouvelle taille
+buttonStartReplay.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonStartReplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonStartReplay.Font = Enum.Font.SourceSans
+buttonStartReplay.TextSize = 24
+buttonStartReplay.Text = "Start Replay"
+buttonStartReplay.Parent = recordTab
+
+local buttonStartReplayCorner = Instance.new("UICorner")
+buttonStartReplayCorner.CornerRadius = UDim.new(0, 12)
+buttonStartReplayCorner.Parent = buttonStartReplay
+
+local buttonStopReplay = Instance.new("TextButton")
+buttonStopReplay.Size = UDim2.new(0, 250, 0, 50) -- Agrandi à 250 pixels de large
+buttonStopReplay.Position = UDim2.new(0.5, -125, 0.6, -25) -- Réajusté pour la nouvelle taille
+buttonStopReplay.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonStopReplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonStopReplay.Font = Enum.Font.SourceSans
+buttonStopReplay.TextSize = 24
+buttonStopReplay.Text = "Stop Replay"
+buttonStopReplay.Parent = recordTab
+
+local buttonStopReplayCorner = Instance.new("UICorner")
+buttonStopReplayCorner.CornerRadius = UDim.new(0, 12)
+buttonStopReplayCorner.Parent = buttonStopReplay
+
+-- Cadre noir pour l'auto-farm
+local autoFarmFrame = Instance.new("Frame")
+autoFarmFrame.Size = UDim2.new(1, 0, 1, 0)
+autoFarmFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+autoFarmFrame.BorderSizePixel = 0
+autoFarmFrame.Visible = false
+autoFarmFrame.ZIndex = 10
+autoFarmFrame.Parent = screenGui
+-- AUTOFARM BY https://discord.gg/atbk7jvtdm
+local autoFarmText = Instance.new("TextLabel")
+autoFarmText.Size = UDim2.new(1, 0, 0.8, 0)
+autoFarmText.Position = UDim2.new(0, 0, 0.1, 0)
+autoFarmText.BackgroundTransparency = 1
+autoFarmText.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoFarmText.Font = Enum.Font.SourceSansBold
+autoFarmText.TextSize = 36
+autoFarmText.Text = "AUTOFARM BY https://discord.gg/atbk7jvtdm"
+autoFarmText.TextXAlignment = Enum.TextXAlignment.Center
+autoFarmText.Parent = autoFarmFrame
+
+local autoFarmSubText = Instance.new("TextLabel")
+autoFarmSubText.Size = UDim2.new(1, 0, 0.2, 0)
+autoFarmSubText.Position = UDim2.new(0, 0, 0.8, 0)
+autoFarmSubText.BackgroundTransparency = 1
+autoFarmSubText.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoFarmSubText.Font = Enum.Font.SourceSans
+autoFarmSubText.TextSize = 24
+autoFarmSubText.Text = "Press Space to Stop the Script"
+autoFarmSubText.TextXAlignment = Enum.TextXAlignment.Center
+autoFarmSubText.Parent = autoFarmFrame
+
+-- Variables pour l'enregistrement et la relecture
+local recording = false
+local actions = {}
+local replaying = false
+local replayIndex = 1
+
+-- Fonction pour enregistrer les actions
+local function recordAction(actionType, data)
+    table.insert(actions, {actionType = actionType, data = data, time = tick()})
+end
+
+-- Fonction pour commencer l'enregistrement
+local function startRecording()
+    recording = true
+    actions = {} -- Réinitialise les actions
+    print("Enregistrement démarré")
+end
+
+-- Fonction pour arrêter l'enregistrement
+local function stopRecording()
+    recording = false
+    print("Enregistrement arrêté")
+end
+
+-- Fonction pour arrêter la relecture
+local function stopReplay()
+    replaying = false
+    autoFarmFrame.Visible = false -- Cache le cadre noir
+end
+
+-- Fonction pour lire les actions enregistrées
+local function replayActions()
+    replaying = true
+    autoFarmFrame.Visible = true -- Affiche le cadre noir
+    local startTime = tick()
+    while replaying do
+        local currentTime = tick()
+        local action = actions[replayIndex]
+        if action then
+            local delay = (action.time - startTime) / 4 -- Réduit le délai pour accélérer la relecture
+            if currentTime - startTime >= delay then
+                if action.actionType == "Move" and player.Character and player.Character.PrimaryPart then
+                    player.Character:SetPrimaryPartCFrame(action.data)
+                elseif action.actionType == "KeyPress" then
+                    local VirtualInputManager = game:GetService("VirtualInputManager")
+                    VirtualInputManager:SendKeyEvent(true, action.data.KeyCode, false, game)
+                    wait(action.data.Duration)
+                    VirtualInputManager:SendKeyEvent(false, action.data.KeyCode, false, game)
+                end
+                replayIndex = replayIndex + 1
+                if replayIndex > #actions then
+                    replayIndex = 1
+                    startTime = tick()
+                end
+            end
+        end
+        RunService.Heartbeat:Wait() -- AUTOFARM BY https://discord.gg/atbk7jvtdm
+    end
+end
+
+-- Connexion des boutons aux fonctions
+buttonStartRecording.MouseButton1Click:Connect(startRecording)
+buttonStopRecording.MouseButton1Click:Connect(stopRecording)
+buttonStartReplay.MouseButton1Click:Connect(function()
+    if not replaying then
+        replayActions() -- Lance la relecture automatiquement lorsque le bouton est cliqué
+    end
+end)
+buttonStopReplay.MouseButton1Click:Connect(stopReplay)
+-- AUTOFARM BY https://discord.gg/atbk7jvtdm
+-- Enregistrement des mouvements
+RunService.Stepped:Connect(function(_, dt)
+    if recording and player.Character and player.Character.PrimaryPart then
+        local position = player.Character.PrimaryPart.CFrame
+        recordAction("Move", position)
+    end
+end)
+
+-- Gestion de la touche espace pour arrêter le script
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space then
+        autoFarmFrame.Visible = false
+        stopReplay()
+    end
+end)
+
+-- Ajout du texte multicolore en haut de l'écran
+local rainbowText = Instance.new("TextLabel")
+rainbowText.Size = UDim2.new(1, 0, 0, 40)
+rainbowText.Position = UDim2.new(0, 0, 0, 0)
+rainbowText.BackgroundTransparency = 1
+rainbowText.TextColor3 = Color3.fromRGB(255, 0, 0) -- La couleur initiale du texte
+rainbowText.Font = Enum.Font.SourceSansBold
+rainbowText.TextSize = 24
+rainbowText.Text = "AUTOFARM BY https://discord.gg/atbk7jvtdm"
+rainbowText.TextStrokeTransparency = 0.5
+rainbowText.TextXAlignment = Enum.TextXAlignment.Center
+rainbowText.Parent = screenGui
+
+-- Fonction pour changer la couleur du texte
+local function animateRainbowText()
+    local hue = tick() % 1
+    local color = Color3.fromHSV(hue, 1, 1)
+    rainbowText.TextColor3 = color
+end -- AUTOFARM BY https://discord.gg/atbk7jvtdm
+
+RunService.RenderStepped:Connect(animateRainbowText)
