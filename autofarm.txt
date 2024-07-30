@@ -1,5 +1,4 @@
--- STREET LIFE
--- AUTOFARM
+-- Street life
 local player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -107,7 +106,30 @@ end
 playerTabButton.MouseButton1Click:Connect(function() switchTab(playerTab) end)
 recordTabButton.MouseButton1Click:Connect(function() switchTab(recordTab) end)
 
--- Ajout du bouton "AFK SCRIPT"
+-- Fonction d'exécution du script externe
+local function executeExternalScript()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    print("Script exécuté")
+end
+
+-- Ajout du bouton "Execute Script"
+local buttonFly = Instance.new("TextButton")
+buttonFly.Size = UDim2.new(0, 200, 0, 50)
+buttonFly.Position = UDim2.new(0.5, -100, 0.1, -25)
+buttonFly.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+buttonFly.TextColor3 = Color3.fromRGB(255, 255, 255)
+buttonFly.Font = Enum.Font.SourceSans
+buttonFly.TextSize = 24
+buttonFly.Text = "Execute Script"
+buttonFly.Parent = playerTab
+
+local buttonFlyCorner = Instance.new("UICorner")
+buttonFlyCorner.CornerRadius = UDim.new(0, 12)
+buttonFlyCorner.Parent = buttonFly
+
+buttonFly.MouseButton1Click:Connect(executeExternalScript)
+
+-- Nouveau bouton "AFK SCRIPT"
 local function executeAFKScript()
     wait(0.5)
     local ba = Instance.new("ScreenGui")
@@ -158,35 +180,6 @@ local function executeAFKScript()
     end)
 end
 
--- Ajout des éléments à l'onglet Player
-local playerTitle = Instance.new("TextLabel")
-playerTitle.Size = UDim2.new(1, 0, 0, 30)
-playerTitle.Position = UDim2.new(0, 0, 0, 0)
-playerTitle.BackgroundTransparency = 1
-playerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-playerTitle.Font = Enum.Font.SourceSansBold
-playerTitle.TextSize = 20
-playerTitle.Text = "Player Controls"
-playerTitle.TextXAlignment = Enum.TextXAlignment.Center
-playerTitle.Parent = playerTab
-
-local buttonFly = Instance.new("TextButton")
-buttonFly.Size = UDim2.new(0, 200, 0, 50)
-buttonFly.Position = UDim2.new(0.5, -100, 0.1, -25)
-buttonFly.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-buttonFly.TextColor3 = Color3.fromRGB(255, 255, 255)
-buttonFly.Font = Enum.Font.SourceSans
-buttonFly.TextSize = 24
-buttonFly.Text = "Execute Script"
-buttonFly.Parent = playerTab
-
-local buttonFlyCorner = Instance.new("UICorner")
-buttonFlyCorner.CornerRadius = UDim.new(0, 12)
-buttonFlyCorner.Parent = buttonFly
-
-buttonFly.MouseButton1Click:Connect(executeExternalScript)
-
--- Nouveau bouton "AFK SCRIPT"
 local buttonAFK = Instance.new("TextButton")
 buttonAFK.Size = UDim2.new(0, 200, 0, 50)
 buttonAFK.Position = UDim2.new(0.5, -100, 0.25, -25)
@@ -291,7 +284,7 @@ local function replayActions()
         local currentTime = tick()
         local action = actions[replayIndex]
         if action then
-            local delay = (action.time - startTime) / 2
+            local delay = (action.time - startTime) / 4
             if currentTime - startTime >= delay then
                 if action.actionType == "Move" and player.Character and player.Character.PrimaryPart then
                     player.Character:SetPrimaryPartCFrame(action.data)
@@ -332,6 +325,7 @@ UserInputService.InputBegan:Connect(function(input)
         recordAction("KeyPress", {KeyCode = input.KeyCode, Duration = 4})
     end
 end)
+
 -- Ajout du texte multicolore en haut de l'écran
 local rainbowText = Instance.new("TextLabel")
 rainbowText.Size = UDim2.new(1, 0, 0, 40)
